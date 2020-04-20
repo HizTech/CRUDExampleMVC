@@ -47,7 +47,8 @@ public class App {
                 ArrayList<String> data=new ArrayList<>();
                 data.add("Cedula de Ciudadania");
                 data.add("1345");
-                ArrayList<Person> list = model.selectPerson("IDNumber", data);
+                
+                ArrayList<Person> list = model.selectPerson("", null);
 
                 for(int i=0; i<list.size(); i++){
 
@@ -61,7 +62,7 @@ public class App {
 
                 person = new Person();
 
-                person.setId(2);
+                person.setId(14);
                 person.setIdNumber(1345);
                 person.setIdType("Cedula de Ciudadania");
                 person.setName("Maria Carolina");
@@ -80,9 +81,23 @@ public class App {
             break;
 
             case 4:
+
+                int confirm = JOptionPane.showConfirmDialog(null, "¿Esta seguro que desea realizar el proceso?\n"
+                                                                 +"Todos los datos se perderan");
+
+                if(confirm == JOptionPane.YES_OPTION){
+                    if(model.deletePerson(4)){
+                        System.out.println("Los datos han sido eliminados de manera exitosa");
+                    }else{
+                        System.out.println("No se pudo eliminar la información");
+                    }
+                }
+
             break;
 
             case 5:
+                System.out.println("Saliendo del sistema...");
+                System.out.println("Proceso finalizado");
             break;
 
         }

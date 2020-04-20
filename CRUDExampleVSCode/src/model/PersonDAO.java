@@ -21,7 +21,7 @@ public class PersonDAO {
 
             if(connect != null){
 
-                String sql = "INSERT INTO persona (id_number, id_type, name, last_name, date_of_birth, gender, email, phone) VALUES (?,?,?,?,?,?,?,?)";
+                String sql = "INSERT INTO persona (id_number, id_type, name, last_name, date_of_birth, gender, email, phone, state) VALUES (?,?,?,?,?,?,?,?,?)";
 
                 pst = connect.prepareStatement(sql);
 
@@ -33,6 +33,7 @@ public class PersonDAO {
                 pst.setString(6, person.getGender());
                 pst.setString(7, person.getEmail());
                 pst.setString(8, person.getPhone());
+                pst.setInt(9, 1);
 
                 int res = pst.executeUpdate();
 
@@ -59,7 +60,6 @@ public class PersonDAO {
         return state;
     }
 
-
     public ArrayList<Person> selectPerson(String filter, ArrayList<String> data){
 
         ArrayList<Person> list = new ArrayList<>();
@@ -78,21 +78,21 @@ public class PersonDAO {
                 switch (filter) {
                     
                     case "Name":  
-                        sql = "SELECT * FROM persona WHERE name REGEXP ? AND last_name REGEXP ?";
+                        sql = "SELECT * FROM persona WHERE name REGEXP ? AND last_name REGEXP ? AND state=1";
                         pst = connect.prepareStatement(sql);
                         pst.setString(1, data.get(0));
                         pst.setString(2, data.get(0));                                             
                     break;
                 
                     case "IDNumber":                        
-                        sql = "SELECT * FROM persona WHERE id_type=? AND id_number=?";
+                        sql = "SELECT * FROM persona WHERE id_type=? AND id_number=? AND state=1";
                         pst = connect.prepareStatement(sql);
                         pst.setString(1, data.get(0));
                         pst.setInt(2, Integer.parseInt(data.get(1)));                                             
                     break;
 
                     default:
-                        sql = "SELECT * FROM persona WHERE 1";
+                        sql = "SELECT * FROM persona WHERE 1 AND state=1";
                         pst = connect.prepareStatement(sql);                    
                     break;
 
@@ -140,7 +140,6 @@ public class PersonDAO {
         return list;
 
     }
-
 
     public boolean updatePerson(Person person){
 
@@ -193,5 +192,52 @@ public class PersonDAO {
 
     }
 
+    public boolean deletePerson(int id){
+
+        boolean state = false;
+        Connection connect = null;
+
+        try{
+
+            connect = ConnectionPool.getInstance().getConnection();
+
+            if(connect != null){
+
+                //String sql = "DELETE FROM persona WHERE id=?";
+
+                String sql = "UPDATE persona SET state=? WHERE id=?";
+
+                pst = connect.prepareStatement(sql);
+                pst.setInt(1, 0);
+                pst.setInt(2, id);
+
+                int res = pst.executeUpdate();
+
+                state = res > 0;
+
+            }else{
+                System.out.println("Conexión Fallida");
+            }
+
+
+        }catch(Exception ex){
+
+            System.out.println(ex.getMessage());
+        
+        }finally{
+            try {
+                ConnectionPool.getInstance().closeConnection(connect);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+
+        return state;
+
+
+    }
+
+    
 
 }
